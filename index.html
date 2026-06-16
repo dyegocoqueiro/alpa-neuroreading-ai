@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ALPA NeuroReading AI v8.0 - plataforma de treino de leitura, visão periférica, chunking, pacer e mindset leitor." />
+  <title>ALPA NeuroReading AI v8.0 - Ultimate Edition</title>
+
+  <!-- Chart.js para gráficos do dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- EmailJS Browser SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    :root {
+      --bg-0: #030712;
+      --bg-1: #0f172a;
+      --bg-2: #1e1b4b;
+      --emerald: #10b981;
+      --blue: #38bdf8;
+      --amethyst: #a855f7;
+      --gold: #fbbf24;
+      --rose: #fb7185;
+      --text: #e5f3ff;
+      --muted: #94a3b8;
+      --glass: rgba(15, 23, 42, 0.66);
+      --glass-strong: rgba(2, 6, 23, 0.82);
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow-blue: 0 0 28px rgba(56, 189, 248, 0.22);
+      --shadow-emerald: 0 0 28px rgba(16, 185, 129, 0.22);
+      --theme-accent: var(--blue);
+      --theme-accent-2: var(--emerald);
+      --theme-accent-3: var(--amethyst);
+      --danger: #ef4444;
+      --success: #22c55e;
+      --radius: 22px;
+      --transition: 220ms ease;
+    }
+
+    body[data-theme="level-2"] {
+      --theme-accent: var(--amethyst);
+      --theme-accent-2: var(--blue);
+      --theme-accent-3: #c084fc;
+    }
+
+    body[data-theme="level-3"] {
+      --theme-accent: var(--gold);
+      --theme-accent-2: var(--emerald);
+      --theme-accent-3: #f97316;
+    }
+
+    body[data-theme="level-4"] {
+      --theme-accent: var(--emerald);
+      --theme-accent-2: #14b8a6;
+      --theme-accent-3: var(--blue);
+    }
+
+    body[data-theme="level-5"] {
+      --theme-accent: #f472b6;
+      --theme-accent-2: var(--gold);
+      --theme-accent-3: var(--amethyst);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.16), transparent 34%),
+        radial-gradient(circle at 84% 12%, rgba(168, 85, 247, 0.17), transparent 36%),
+        radial-gradient(circle at 62% 82%, rgba(16, 185, 129, 0.12), transparent 38%),
+        linear-gradient(135deg, var(--bg-0), var(--bg-1) 42%, var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at center, rgba(0,0,0,0.82), transparent 82%);
+      z-index: -1;
+      animation: gridDrift 28s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      from { transform: translate3d(0,0,0); }
+      to { transform: translate3d(-42px,-42px,0); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 18px rgba(56,189,248,0.25), inset 0 0 20px rgba(56,189,248,0.05); }
+      50% { box-shadow: 0 0 38px rgba(56,189,248,0.55), inset 0 0 30px rgba(16,185,129,0.09); }
+    }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-9px); }
+    }
+
+    @keyframes shimmer {
+      from { background-position: -140% 0; }
+      to { background-position: 240% 0; }
+    }
+
+    @keyframes scanLine {
+      0% { transform: translateY(-120%); opacity: .15; }
+      40% { opacity: .8; }
+      100% { transform: translateY(120%); opacity: .1; }
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.96) translateY(14px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .app-shell {
+      width: min(1440px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 110px;
+    }
+
+    .top-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 6px);
+      background: linear-gradient(135deg, rgba(15,23,42,.78), rgba(30,27,75,.58));
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-blue);
+      position: sticky;
+      top: 14px;
+      z-index: 20;
+    }
+
+    .brand-line {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-orb {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 35% 25%, #fff, transparent 14%),
+        linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2));
+      box-shadow: 0 0 28px color-mix(in srgb, var(--theme-accent) 42%, transparent);
+      font-weight: 900;
+      color: #02111f;
+      letter-spacing: -1px;
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2vw, 2.2rem);
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+    }
+
+    .brand-copy p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: .93rem;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .stat-pill {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: .84rem;
+      color: #dbeafe;
+      white-space: nowrap;
+    }
+
+    .stat-pill strong {
+      color: var(--theme-accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .tabbar {
+      display: flex;
+      gap: 10px;
+      margin: 18px 0;
+      overflow-x: auto;
+      padding: 4px 2px 10px;
+      scrollbar-color: var(--theme-accent) rgba(255,255,255,.06);
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: rgba(15,23,42,.55);
+      border-radius: 999px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .tab-btn:hover,
+    .tab-btn.active {
+      border-color: color-mix(in srgb, var(--theme-accent) 62%, white 4%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--theme-accent) 18%, transparent), rgba(255,255,255,.07));
+      box-shadow: 0 0 22px color-mix(in srgb, var(--theme-accent) 28%, transparent);
+      transform: translateY(-1px);
+    }
+
+    main.panel {
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 8px);
+      min-height: 640px;
+      background: linear-gradient(145deg, rgba(15,23,42,.64), rgba(2,6,23,.68));
+      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 90px rgba(0,0,0,.36);
+      overflow: hidden;
+      position: relative;
+    }
+
+    main.panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.035), transparent);
+      background-size: 260% 100%;
+      animation: shimmer 8s ease-in-out infinite;
+    }
+
+    .tab-view {
+      display: none;
+      padding: clamp(18px, 3vw, 34px);
+      position: relative;
+      z-index: 1;
+      animation: popIn .36s ease both;
+    }
+
+    .tab-view.active { display: block; }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.4vw, 2.35rem);
+      letter-spacing: -.05em;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      margin: 8px 0 0;
+      max-width: 760px;
+      line-height: 1.62;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.03));
+      border-radius: var(--radius);
+      padding: 18px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 10px 36px rgba(0,0,0,.18);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--theme-accent) 45%, rgba(255,255,255,.2));
+      box-shadow: 0 18px 48px rgba(0,0,0,.22), 0 0 34px color-mix(in srgb, var(--theme-accent) 18%, transparent);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: 18px;
+      right: 18px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
+      opacity: .72;
+    }
+
+    .metric-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .84rem;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(1.55rem, 3vw, 2.5rem);
+      font-weight: 900;
+      color: #f8fafc;
+      letter-spacing: -.04em;
+    }
+
+    .metric-value small { font-size: .85rem; color: var(--muted); }
+
+    .progress-shell {
+      height: 12px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 999px;
+      background: rgba(2,6,23,.58);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2), var(--theme-accent-3));
+      box-shadow: 0 0 20px color-mix(in srgb, var(--theme-accent) 44%, transparent);
+      transition: width 720ms cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .chart-card { min-height: 360px; }
+    canvas { max-width: 100%; }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+    }
+
+    .btn {
+      border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, rgba(255,255,255,.1));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--theme-accent) 22%, rgba(255,255,255,.05)), rgba(255,255,255,.04));
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: var(--transition);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--theme-accent) 16%, transparent);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px color-mix(in srgb, var(--theme-accent) 32%, transparent);
+    }
+
+    .btn:disabled {
+      opacity: .52;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn.secondary {
+      border-color: var(--border);
+      background: rgba(255,255,255,.052);
+      color: #dbeafe;
+    }
+
+    .btn.danger {
+      border-color: rgba(239,68,68,.42);
+      background: rgba(239,68,68,.12);
+    }
+
+    .input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(2,6,23,.52);
+      color: var(--text);
+      border-radius: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: var(--transition);
+      font: inherit;
+    }
+
+    .input:focus, select:focus, textarea:focus {
+      border-color: color-mix(in srgb, var(--theme-accent) 70%, white 6%);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--theme-accent) 14%, transparent);
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: #cbd5e1;
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    .schulte-stage {
+      display: grid;
+      grid-template-columns: minmax(280px, 430px) 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .schulte-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .schulte-cell {
+      aspect-ratio: 1 / 1;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255,255,255,.11), transparent 22%),
+        linear-gradient(135deg, rgba(56,189,248,.13), rgba(168,85,247,.08));
+      display: grid;
+      place-items: center;
+      color: #f8fafc;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(2rem, 6vw, 4.6rem);
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+      box-shadow: inset 0 0 24px rgba(255,255,255,.04);
+    }
+
+    .schulte-cell:hover {
+      transform: scale(1.025);
+      border-color: var(--theme-accent);
+      box-shadow: 0 0 28px color-mix(in srgb, var(--theme-accent) 22%, transparent), inset 0 0 34px rgba(255,255,255,.05);
+    }
+
+    .schulte-cell.done {
+      opacity: .28;
+      transform: scale(.95);
+      pointer-events: none;
+    }
+
+    .schulte-cell.error {
+      border-color: rgba(239,68,68,.72);
+      animation: shake .28s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      33% { transform: translateX(-5px); }
+      66% { transform: translateX(5px); }
+    }
+
+    .timer {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: var(--theme-accent);
+      text-shadow: 0 0 18px color-mix(in srgb, var(--theme-accent) 42%, transparent);
+    }
+
+    .trainer-screen {
+      min-height: 340px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at center, color-mix(in srgb, var(--theme-accent) 18%, transparent), rgba(2,6,23,.88) 34%, rgba(2,6,23,.95) 76%),
+        linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trainer-screen::before {
+      content: "";
+      position: absolute;
+      inset: -30% 0;
+      background: linear-gradient(transparent, rgba(56,189,248,.08), transparent);
+      animation: scanLine 7s linear infinite;
+    }
+
+    .chunk-phrase {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      font-size: clamp(2.2rem, 7vw, 6rem);
+      font-weight: 950;
+      letter-spacing: -.06em;
+      line-height: .92;
+      text-shadow: 0 0 34px color-mix(in srgb, var(--theme-accent) 44%, transparent);
+    }
+
+    .tiny-note {
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.55;
+    }
+
+    .pacer-text {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      line-height: 1.78;
+      font-size: clamp(1rem, 1.3vw, 1.18rem);
+      color: #dbeafe;
+      max-height: 520px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .pacer-line {
+      padding: 10px 12px;
+      border-radius: 14px;
+      transition: var(--transition);
+      color: #bcd2e7;
+    }
+
+    .pacer-line.active {
+      color: #ffffff;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--theme-accent) 32%, transparent), rgba(255,255,255,.04));
+      box-shadow: 0 0 22px color-mix(in srgb, var(--theme-accent) 18%, transparent);
+      transform: translateX(6px);
+    }
+
+    .quiz-box {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .quiz-box.active { display: block; }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .option-btn {
+      text-align: left;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .option-btn:hover { border-color: var(--theme-accent); }
+    .option-btn.correct { border-color: rgba(34,197,94,.8); background: rgba(34,197,94,.12); }
+    .option-btn.wrong { border-color: rgba(239,68,68,.8); background: rgba(239,68,68,.12); }
+
+    .mind-card h3 { margin: 0 0 10px; }
+    .mind-card p { color: #cbd5e1; line-height: 1.65; margin: 0; }
+    .mind-card .tag {
+      display: inline-flex;
+      margin-bottom: 12px;
+      color: #06131f;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2));
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: .75rem;
+    }
+
+    .contract-card {
+      text-align: center;
+      padding: 28px;
+      border-color: color-mix(in srgb, var(--theme-accent) 32%, rgba(255,255,255,.18));
+    }
+
+    .contract-seal {
+      width: 104px;
+      height: 104px;
+      border-radius: 35px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      background: radial-gradient(circle at 30% 22%, #fff, transparent 16%), linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2), var(--theme-accent-3));
+      color: #020617;
+      font-weight: 1000;
+      font-size: 2rem;
+      box-shadow: 0 0 46px color-mix(in srgb, var(--theme-accent) 34%, transparent);
+      animation: floaty 4s ease-in-out infinite;
+    }
+
+    .contract-card.accepted {
+      animation: pulseGlow 1.8s ease-in-out 2;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+      max-height: 410px;
+      overflow: auto;
+    }
+
+    .timeline-item {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      padding: 12px;
+      border-radius: 15px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .timeline-item strong { color: var(--theme-accent); }
+
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(56,189,248,.18), transparent 32%),
+        radial-gradient(circle at 82% 80%, rgba(168,85,247,.18), transparent 36%),
+        rgba(2,6,23,.86);
+      backdrop-filter: blur(18px);
+    }
+
+    .auth-overlay.hidden { display: none; }
+
+    .auth-card {
+      width: min(520px, 100%);
+      border: 1px solid color-mix(in srgb, var(--blue) 44%, rgba(255,255,255,.1));
+      border-radius: 32px;
+      padding: clamp(22px, 4vw, 36px);
+      background: linear-gradient(145deg, rgba(15,23,42,.80), rgba(2,6,23,.88));
+      box-shadow: 0 0 48px rgba(56,189,248,.26), inset 0 0 32px rgba(255,255,255,.035);
+      animation: pulseGlow 2.4s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.06), transparent);
+      background-size: 240% 100%;
+      animation: shimmer 5s ease infinite;
+    }
+
+    .auth-card > * { position: relative; z-index: 1; }
+
+    .auth-logo {
+      width: 74px;
+      height: 74px;
+      border-radius: 25px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--blue), var(--emerald));
+      color: #020617;
+      font-size: 1.65rem;
+      font-weight: 1000;
+      margin-bottom: 18px;
+      box-shadow: 0 0 34px rgba(56,189,248,.45);
+    }
+
+    .auth-card h2 { margin: 0; font-size: clamp(1.5rem, 4vw, 2.2rem); letter-spacing: -.05em; }
+    .auth-card p { color: var(--muted); line-height: 1.62; }
+
+    .auth-step { display: none; gap: 12px; }
+    .auth-step.active { display: grid; }
+
+    .otp-digits {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .otp-digit {
+      text-align: center;
+      font-size: 1.35rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      padding: 13px 4px;
+    }
+
+    .auth-status {
+      min-height: 22px;
+      color: var(--blue);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .85rem;
+    }
+
+    .loading-synapse {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--emerald);
+      margin: 8px 0;
+      font-weight: 800;
+    }
+
+    .loading-synapse.active { display: flex; }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.16);
+      border-top-color: var(--emerald);
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ai-bot {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 80;
+      width: min(390px, calc(100% - 36px));
+      border: 1px solid color-mix(in srgb, var(--theme-accent) 40%, rgba(255,255,255,.1));
+      background: linear-gradient(145deg, rgba(15,23,42,.82), rgba(2,6,23,.88));
+      backdrop-filter: blur(18px);
+      border-radius: 26px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.34), 0 0 28px color-mix(in srgb, var(--theme-accent) 24%, transparent);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .ai-bot.minimized { width: 82px; }
+    .ai-bot.minimized .bot-body { display: none; }
+    .ai-bot.minimized .bot-head { justify-content: center; }
+    .ai-bot.minimized .bot-title { display: none; }
+
+    .bot-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .bot-identity { display: flex; align-items: center; gap: 10px; }
+
+    .bot-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 34% 22%, #fff, transparent 15%),
+        linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2));
+      color: #02111f;
+      font-weight: 1000;
+      box-shadow: 0 0 26px color-mix(in srgb, var(--theme-accent) 36%, transparent);
+      animation: floaty 3.8s ease-in-out infinite;
+    }
+
+    .bot-title strong { display: block; }
+    .bot-title span { color: var(--muted); font-size: .78rem; }
+
+    .bot-body { padding: 14px; }
+    .bot-message {
+      color: #dbeafe;
+      line-height: 1.5;
+      min-height: 52px;
+      font-size: .92rem;
+    }
+
+    .bot-alert {
+      animation: botAlert .9s ease 2;
+    }
+
+    @keyframes botAlert {
+      0%, 100% { transform: translateX(0); border-color: var(--theme-accent); }
+      25% { transform: translateX(-5px); border-color: var(--danger); }
+      75% { transform: translateX(5px); border-color: var(--danger); }
+    }
+
+    .mini-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .toast-zone {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 1200;
+      display: grid;
+      gap: 10px;
+      width: min(390px, calc(100% - 36px));
+      pointer-events: none;
+    }
+
+    .toast {
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--theme-accent);
+      background: rgba(15,23,42,.92);
+      backdrop-filter: blur(14px);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.28);
+      animation: popIn .24s ease both;
+      color: #e2e8f0;
+    }
+
+    .danger-text { color: var(--rose); }
+    .success-text { color: var(--success); }
+    .accent-text { color: var(--theme-accent); }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1080px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .schulte-stage { grid-template-columns: 1fr; }
+      .top-header { grid-template-columns: 1fr; }
+      .header-stats { justify-content: flex-start; }
+    }
+
+    @media (max-width: 720px) {
+      .app-shell { width: min(100% - 18px, 1440px); padding-top: 10px; }
+      .top-header { top: 8px; padding: 16px; }
+      .brand-orb { width: 48px; height: 48px; border-radius: 16px; }
+      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .section-title { display: block; }
+      .ai-bot { right: 9px; bottom: 9px; }
+      .tab-view { padding: 16px; }
+      .trainer-screen { min-height: 260px; }
+    }
+  </style>
+</head>
+<body data-theme="level-1">
+  <div class="toast-zone" id="toastZone"></div>
+
+  <!-- LOGIN / OTP -->
+  <section class="auth-overlay" id="authOverlay" aria-label="Autenticação ALPA">
+    <div class="auth-card">
+      <div class="auth-logo">AL</div>
+      <h2>ALPA NeuroReading AI v8.0</h2>
+      <p>Camada de validação por e-mail, diagnóstico inicial e desbloqueio progressivo dos treinos de leitura ativa.</p>
+
+      <div class="auth-step active" id="authStepLogin">
+        <label>
+          E-mail de acesso
+          <input class="input" id="loginEmail" type="email" placeholder="seuemail@email.com" autocomplete="email" required />
+        </label>
+        <label>
+          Criar senha local
+          <input class="input" id="loginPassword" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required />
+        </label>
+        <div class="loading-synapse" id="loadingSynapse"><span class="spinner"></span> Criptografando Sinapses...</div>
+        <button class="btn" id="sendOtpBtn">Enviar OTP real por e-mail</button>
+        <button class="btn secondary" id="demoOtpBtn" title="Use apenas para teste local se ainda não configurou o EmailJS.">Modo teste local</button>
+        <div class="auth-status" id="authStatus"></div>
+        <p class="tiny-note">Para envio real, configure <strong>EMAILJS_CONFIG</strong> no JavaScript com Public Key, Service ID e Template ID.</p>
+      </div>
+
+      <div class="auth-step" id="authStepOtp">
+        <p>Digite o código de 6 dígitos enviado ao e-mail informado. O código expira em 10 minutos.</p>
+        <div class="otp-digits" id="otpDigits" aria-label="Código OTP">
+          <input maxlength="1" inputmode="numeric" class="input otp-digit" />
+          <input maxlength="1" inputmode="numeric" class="input otp-digit" />
+          <input maxlength="1" inputmode="numeric" class="input otp-digit" />
+          <input maxlength="1" inputmode="numeric" class="input otp-digit" />
+          <input maxlength="1" inputmode="numeric" class="input otp-digit" />
+          <input maxlength="1" inputmode="numeric" class="input otp-digit" />
+        </div>
+        <button class="btn" id="verifyOtpBtn">Validar OTP e Desbloquear</button>
+        <button class="btn secondary" id="backToLoginBtn">Voltar</button>
+        <div class="auth-status" id="otpStatus"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="app-shell" id="appShell" aria-hidden="true">
+    <header class="top-header">
+      <div class="brand-line">
+        <div class="brand-orb">ALPA</div>
+        <div class="brand-copy">
+          <h1>NeuroReading AI v8.0 - Ultimate Edition</h1>
+          <p>Dyego · Treinamento ALPA de leitura ativa, visão periférica, supressão ocular e identidade leitora.</p>
+        </div>
+      </div>
+      <div class="header-stats">
+        <span class="stat-pill">Patente: <strong id="headerLevel">Nível 1 · Azul</strong></span>
+        <span class="stat-pill">Sessões: <strong id="headerSessions">0</strong></span>
+        <span class="stat-pill">ICE atual: <strong id="headerIce">46.8</strong></span>
+        <span class="stat-pill">PPM alvo: <strong id="headerPpm">117</strong></span>
+      </div>
+    </header>
+
+    <nav class="tabbar" aria-label="Navegação principal">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard Neural</button>
+      <button class="tab-btn" data-tab="schulte">Schulte 3x3</button>
+      <button class="tab-btn" data-tab="chunking">Chunking</button>
+      <button class="tab-btn" data-tab="pacer">Pacer Rítmico</button>
+      <button class="tab-btn" data-tab="mindset">Mindset & Flow</button>
+    </nav>
+
+    <main class="panel">
+      <!-- DASHBOARD -->
+      <section class="tab-view active" id="tab-dashboard">
+        <div class="section-title">
+          <div>
+            <h2>Dashboard de evolução neural</h2>
+            <p>Resumo do diagnóstico base, progresso de ICE, ganho percentual, velocidade de leitura e avanço para a próxima patente gamificada.</p>
+          </div>
+          <button class="btn danger" id="resetBtn">Resetar dados</button>
+        </div>
+
+        <div class="grid grid-4">
+          <article class="card">
+            <div class="metric-label"><span>PPM base</span><span>Leitor fonético</span></div>
+            <div class="metric-value" id="metricPpm">117 <small>ppm</small></div>
+            <div class="progress-shell"><div class="progress-bar" id="ppmProgress"></div></div>
+          </article>
+          <article class="card">
+            <div class="metric-label"><span>Compreensão</span><span>retenção</span></div>
+            <div class="metric-value" id="metricComp">40<small>%</small></div>
+            <div class="progress-shell"><div class="progress-bar" id="compProgress"></div></div>
+          </article>
+          <article class="card">
+            <div class="metric-label"><span>ICE</span><span>índice composto</span></div>
+            <div class="metric-value" id="metricIce">46.8</div>
+            <div class="progress-shell"><div class="progress-bar" id="iceProgress"></div></div>
+          </article>
+          <article class="card">
+            <div class="metric-label"><span>Ganho</span><span>vs. baseline</span></div>
+            <div class="metric-value" id="metricGain">0<small>%</small></div>
+            <div class="progress-shell"><div class="progress-bar" id="gainProgress"></div></div>
+          </article>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px;">
+          <article class="card chart-card">
+            <div class="section-title" style="margin-bottom:8px;">
+              <div>
+                <h2 style="font-size:1.35rem;">Curva ICE</h2>
+                <p>Histórico das sessões registradas.</p>
+              </div>
+            </div>
+            <canvas id="iceChart" height="150"></canvas>
+          </article>
+
+          <article class="card">
+            <div class="section-title" style="margin-bottom:8px;">
+              <div>
+                <h2 style="font-size:1.35rem;">Próxima patente</h2>
+                <p id="nextLevelText">Complete 5 sessões com ICE crescente para destravar a próxima camada visual.</p>
+              </div>
+            </div>
+            <div class="progress-shell" style="height:18px;"><div class="progress-bar" id="levelProgress"></div></div>
+            <div style="height:16px;"></div>
+            <div class="grid grid-2">
+              <div class="card">
+                <div class="metric-label"><span>Problema crítico</span></div>
+                <p class="tiny-note"><strong class="danger-text">Subvocalização extrema:</strong> o chunking força leitura por blocos visuais, reduzindo dependência sonora.</p>
+              </div>
+              <div class="card">
+                <div class="metric-label"><span>Problema crítico</span></div>
+                <p class="tiny-note"><strong class="danger-text">Regressão ocular:</strong> o pacer conduz o olhar para frente e diminui releituras impulsivas.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px;">
+          <article class="card">
+            <h3>Últimas sessões</h3>
+            <div class="timeline" id="sessionTimeline"></div>
+          </article>
+          <article class="card">
+            <h3>Diagnóstico ALPA inicial</h3>
+            <p class="tiny-note">Nível base: <strong>Leitor Fonético (Nível 1)</strong>. Métricas iniciais: 117 PPM, 40% de compreensão e ICE 46.8.</p>
+            <div class="control-row">
+              <button class="btn secondary" data-tab-target="schulte">Treinar visão periférica</button>
+              <button class="btn secondary" data-tab-target="chunking">Treinar supressão ocular</button>
+              <button class="btn secondary" data-tab-target="pacer">Treinar anti-regressão</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SCHULTE -->
+      <section class="tab-view" id="tab-schulte">
+        <div class="section-title">
+          <div>
+            <h2>Matriz Schulte 3x3</h2>
+            <p>Fixe a visão no centro e encontre os números de 1 a 9 sem mover a cabeça. O Bot observa pausas longas e alerta quando passar de 3 segundos.</p>
+          </div>
+        </div>
+
+        <div class="schulte-stage">
+          <article class="card">
+            <div class="timer" id="schulteTimer">00.000s</div>
+            <div class="control-row">
+              <button class="btn" id="startSchulteBtn">Iniciar matriz</button>
+              <button class="btn secondary" id="shuffleSchulteBtn">Randomizar</button>
+            </div>
+            <p class="tiny-note">Objetivo: melhorar varredura visual e amplitude periférica. Clique em ordem crescente.</p>
+            <div class="schulte-grid" id="schulteGrid"></div>
+          </article>
+
+          <article class="card">
+            <h3>Protocolo do treino</h3>
+            <p class="tiny-note">1. Olhe para o centro da matriz. 2. Identifique os números sem pronunciar mentalmente. 3. Clique em sequência. 4. Busque fluidez, não pressa caótica.</p>
+            <div class="grid grid-2" style="margin-top:14px;">
+              <div class="card"><div class="metric-label">Próximo alvo</div><div class="metric-value" id="schulteNext">1</div></div>
+              <div class="card"><div class="metric-label">Recorde</div><div class="metric-value" id="schulteBest">--</div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- CHUNKING -->
+      <section class="tab-view" id="tab-chunking">
+        <div class="section-title">
+          <div>
+            <h2>Chunking · Supressão Ocular</h2>
+            <p>O texto surge em blocos de duas palavras, com foco radial, para reduzir leitura fonética palavra por palavra.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <label>Texto dinâmico
+              <select id="chunkTextSelect"></select>
+            </label>
+            <div class="control-row">
+              <label style="min-width:210px;">Velocidade PPM
+                <input class="input" id="chunkSpeed" type="number" min="120" max="900" step="10" />
+              </label>
+              <button class="btn" id="startChunkBtn">Iniciar chunking</button>
+              <button class="btn secondary" id="stopChunkBtn">Parar</button>
+            </div>
+            <p class="tiny-note">A velocidade mínima sobe automaticamente conforme a patente aumenta. Isso força adaptação, mas não substitui compreensão.</p>
+          </article>
+
+          <article class="card">
+            <h3>Compreensão ativa</h3>
+            <p class="tiny-note">Após terminar, responda a pergunta de validação. O sistema registra ICE com base em PPM e compreensão.</p>
+            <div class="quiz-box" id="chunkQuiz"></div>
+          </article>
+        </div>
+
+        <div style="height:16px;"></div>
+        <div class="trainer-screen">
+          <div class="chunk-phrase" id="chunkPhrase">Pressione iniciar</div>
+        </div>
+      </section>
+
+      <!-- PACER -->
+      <section class="tab-view" id="tab-pacer">
+        <div class="section-title">
+          <div>
+            <h2>Pacer Rítmico · Anti-regressão</h2>
+            <p>Uma linha luminosa conduz seu olhar para frente em velocidade controlada, bloqueando o impulso de voltar e reler sem necessidade.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <label>Texto dinâmico
+              <select id="pacerTextSelect"></select>
+            </label>
+            <div class="control-row">
+              <label style="min-width:210px;">Velocidade PPM
+                <input class="input" id="pacerSpeed" type="number" min="120" max="900" step="10" />
+              </label>
+              <button class="btn" id="startPacerBtn">Iniciar pacer</button>
+              <button class="btn secondary" id="stopPacerBtn">Parar</button>
+            </div>
+            <div class="quiz-box" id="pacerQuiz"></div>
+          </article>
+
+          <article class="card">
+            <h3>Texto guiado</h3>
+            <div class="pacer-text" id="pacerText"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- MINDSET -->
+      <section class="tab-view" id="tab-mindset">
+        <div class="section-title">
+          <div>
+            <h2>Mindset & Flow · Como amar livros</h2>
+            <p>Não basta aumentar PPM. O objetivo é criar identidade, ambiente e recompensa emocional para que a leitura vire parte natural da sua rotina.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-4">
+          <article class="card mind-card">
+            <span class="tag">NEUROFOCO</span>
+            <h3>Detox de dopamina</h3>
+            <p>O celular treina o cérebro a buscar recompensa rápida. Antes de ler, faça 12 minutos sem redes, notificações ou música com letra. O tédio inicial vira porta de entrada para foco sustentado.</p>
+          </article>
+          <article class="card mind-card">
+            <span class="tag">HÁBITO</span>
+            <h3>Empilhamento</h3>
+            <p>Ancore a leitura em um gatilho fixo: depois do café, depois do banho ou antes do treino. A frase operacional é: “Depois de X, eu leio 2 páginas”. Pequeno, repetível e sem drama.</p>
+          </article>
+          <article class="card mind-card">
+            <span class="tag">IDENTIDADE</span>
+            <h3>Eu sou leitor</h3>
+            <p>Troque “estou tentando ler” por “eu sou alguém que lê todos os dias”. A identidade reduz negociação mental. O foco deixa de ser quantidade e passa a ser consistência.</p>
+          </article>
+          <article class="card mind-card">
+            <span class="tag">FLOW</span>
+            <h3>Imersão progressiva</h3>
+            <p>Flow surge quando o desafio é um pouco maior que sua habilidade atual. Use textos interessantes, meta curta e ambiente sem interrupção para entrar em leitura profunda.</p>
+          </article>
+        </div>
+
+        <div style="height:16px;"></div>
+        <article class="card contract-card" id="contractCard">
+          <div class="contract-seal">DR</div>
+          <h3>Contrato digital de identidade leitora</h3>
+          <p class="tiny-note">Eu aceito treinar leitura como habilidade, não como obrigação. Eu reduzo distrações, faço sessões curtas e assumo a identidade de leitor em construção.</p>
+          <div class="control-row" style="justify-content:center;">
+            <button class="btn" id="acceptIdentityBtn">Aceitar Identidade</button>
+            <button class="btn secondary" id="openReadingRitualBtn">Gerar ritual de 7 minutos</button>
+          </div>
+          <p id="contractStatus" class="accent-text"></p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- BOT ALPA -->
+  <aside class="ai-bot" id="aiBot" aria-live="polite">
+    <div class="bot-head">
+      <div class="bot-identity">
+        <div class="bot-avatar">AI</div>
+        <div class="bot-title">
+          <strong>ALPA Core Bot</strong>
+          <span>monitor neural ativo</span>
+        </div>
+      </div>
+      <button class="mini-btn" id="minimizeBotBtn" title="Minimizar bot">—</button>
+    </div>
+    <div class="bot-body">
+      <div class="bot-message" id="botMessage">Inicializando análise de sinapses...</div>
+    </div>
+  </aside>
+
+  <script>
+    "use strict";
+
+    /*****************************************************************
+     * CONFIGURAÇÃO EMAILJS
+     * 1) Crie uma conta em https://www.emailjs.com/
+     * 2) Conecte um Email Service
+     * 3) Crie um template com variáveis:
+     *    {{to_email}}, {{to_name}}, {{passcode}}, {{app_name}}
+     * 4) Substitua os valores abaixo.
+     *****************************************************************/
+    const EMAILJS_CONFIG = {
+      publicKey: "COLE_AQUI_SUA_PUBLIC_KEY",
+      serviceId: "COLE_AQUI_SEU_SERVICE_ID",
+      templateId: "COLE_AQUI_SEU_TEMPLATE_ID",
+      appName: "ALPA NeuroReading AI v8.0"
+    };
+
+    const BASELINE = {
+      levelName: "Leitor Fonético (Nível 1)",
+      ppm: 117,
+      comprehension: 40,
+      ice: 46.8,
+      issues: ["Subvocalização extrema", "Visão periférica estreita", "Regressão ocular frequente"]
+    };
+
+    const LEVELS = [
+      { level: 1, name: "Nível 1 · Azul", theme: "level-1", minPpm: 117, color: "#38bdf8" },
+      { level: 2, name: "Nível 2 · Roxo", theme: "level-2", minPpm: 150, color: "#a855f7" },
+      { level: 3, name: "Nível 3 · Dourado", theme: "level-3", minPpm: 190, color: "#fbbf24" },
+      { level: 4, name: "Nível 4 · Esmeralda", theme: "level-4", minPpm: 240, color: "#10b981" },
+      { level: 5, name: "Nível 5 · Prisma", theme: "level-5", minPpm: 310, color: "#f472b6" }
+    ];
+
+    const STORAGE_KEY = "alpa_v8_state_dyego";
+    const AUTH_KEY = "alpa_v8_auth_dyego";
+
+    const contentDB = [
+      [
+        {
+          theme: "PRF",
+          title: "Fiscalização Operacional e Direito Administrativo",
+          text: "A rotina da Polícia Rodoviária Federal combina poder de polícia, legalidade estrita e tomada de decisão em cenário dinâmico. Em uma abordagem, o agente precisa observar sinais objetivos, preservar a segurança viária, registrar elementos verificáveis e agir com proporcionalidade. Direito Administrativo aparece quando se avaliam competência, finalidade, forma, motivo e objeto do ato. A excelência operacional nasce da união entre técnica, disciplina documental e leitura rápida do ambiente.",
+          question: "Qual é a ideia central do texto?",
+          options: ["A PRF atua apenas com intuição", "A fiscalização exige legalidade, técnica e leitura do ambiente", "O ato administrativo não depende de motivo", "A documentação é irrelevante"],
+          answer: 1
+        },
+        {
+          theme: "PRF",
+          title: "Cadeia de Evidências e Segurança Viária",
+          text: "Em ocorrências rodoviárias, a cadeia de evidências protege a confiabilidade do procedimento. Fotos, horários, localização, identificação de partes e narrativa objetiva diminuem fragilidades. A leitura eficiente de normas permite decidir com velocidade sem abandonar o devido processo. O operador excelente não decora tudo: ele reconhece padrões, consulta com método e constrói registros consistentes.",
+          question: "O que fortalece a confiabilidade do procedimento?",
+          options: ["Narrativa vaga", "Fotos, horários, localização e registros objetivos", "Decisão sem método", "Memorização total de normas"],
+          answer: 1
+        }
+      ],
+      [
+        {
+          theme: "3D Printing",
+          title: "Cinemática, Mesa e Precisão em Impressoras 3D",
+          text: "A cinemática de uma impressora 3D determina como motores, correias, guias e firmware transformam coordenadas em movimento real. Em máquinas rápidas, vibração e ressonância podem gerar ghosting, enquanto nivelamento incorreto compromete adesão de primeira camada. Filamento oferece resistência, baixo custo e velocidade de prototipagem. Resina entrega detalhes finos, mas exige pós-cura, cuidado químico e limpeza. Vender impressão 3D exige educar o cliente sobre prazo, acabamento e limitação física do processo.",
+          question: "Qual comparação entre filamento e resina aparece no texto?",
+          options: ["Filamento detalha mais que resina", "Resina exige pós-cura e cuidado químico", "Filamento não serve para protótipos", "Resina dispensa limpeza"],
+          answer: 1
+        },
+        {
+          theme: "3D Printing",
+          title: "Venda Tech e Percepção de Valor",
+          text: "A impressão 3D não vende apenas plástico; vende solução visual, reposição personalizada e velocidade de validação. Um bom orçamento explica material, tempo de máquina, risco de falha, pintura e acabamento. Quando o cliente entende o processo, aceita melhor o preço. A apresentação com fotos macro, antes e depois e vídeos curtos aumenta confiança e reduz objeções.",
+          question: "O que aumenta confiança na venda de impressão 3D?",
+          options: ["Esconder o processo", "Mostrar fotos, vídeos e explicar acabamento", "Prometer prazo impossível", "Cobrar sem justificar"],
+          answer: 1
+        }
+      ],
+      [
+        {
+          theme: "Anime Power Scaling",
+          title: "Mitologia, Poder e Desenvolvimento de Personagens",
+          text: "Power-scaling fica mais interessante quando não mede apenas explosões, mas função narrativa. Naruto usa herança espiritual, laços e trauma para justificar evolução. Dragon Ball transforma disciplina e superação em escalas cósmicas. One Piece trabalha vontade herdada, liberdade e mitologia solar. Comparar personagens exige contexto, feitos observáveis, limitações e coerência da obra, não só preferência emocional.",
+          question: "Segundo o texto, power-scaling deve considerar principalmente o quê?",
+          options: ["Só preferência emocional", "Contexto, feitos, limites e função narrativa", "Apenas tamanho da explosão", "Somente popularidade"],
+          answer: 1
+        },
+        {
+          theme: "Anime Power Scaling",
+          title: "Arquétipos e Jornada do Herói",
+          text: "Grandes protagonistas costumam carregar arquétipos antigos: o órfão escolhido, o guerreiro solar, o trickster, o rei oculto e o mestre sacrificial. Esses padrões aparecem porque traduzem medos e desejos humanos. Quando um personagem evolui, o poder físico costuma simbolizar integração psicológica: medo vira coragem, isolamento vira vínculo, raiva vira propósito.",
+          question: "O que o poder físico pode simbolizar na jornada?",
+          options: ["Integração psicológica", "Ausência de conflito", "Só estética visual", "Fim da narrativa"],
+          answer: 0
+        }
+      ],
+      [
+        {
+          theme: "Áudio e Flow",
+          title: "Frequências, Groove e Estado de Flow",
+          text: "Na música eletrônica, kick, baixo e elementos harmônicos disputam espaço no espectro. Melodic Techno e House funcionam quando graves são limpos, médios contam história e agudos entregam movimento sem fadiga. Na guitarra, flow aparece quando técnica, pulso e intenção emocional se alinham. O músico deixa de pensar nota por nota e passa a perceber frases, tensão e resolução em blocos sonoros.",
+          question: "Qual paralelo com a leitura aparece no texto?",
+          options: ["Pensar nota por nota para sempre", "Perceber frases e blocos em vez de unidades isoladas", "Ignorar ritmo", "Aumentar volume sem controle"],
+          answer: 1
+        },
+        {
+          theme: "Áudio e Flow",
+          title: "Mixagem Mental e Atenção",
+          text: "Assim como uma mixagem precisa retirar frequências que mascaram o elemento principal, a mente leitora precisa remover estímulos que mascaram compreensão. Notificações, abas abertas e pressa criam ruído cognitivo. Um ritual curto, com respiração e objetivo claro, funciona como equalização mental antes da sessão de leitura.",
+          question: "O que funciona como equalização mental antes da leitura?",
+          options: ["Abrir várias abas", "Ritual curto com respiração e objetivo", "Ler com notificações", "Trocar de texto a cada minuto"],
+          answer: 1
+        }
+      ],
+      [
+        {
+          theme: "Marketing Digital",
+          title: "Métricas, Criativos e Conversão em Vendas",
+          text: "Em Facebook Ads, CTR indica atração inicial, CPC mostra custo de atenção, CPM revela disputa por audiência e CPA mede eficiência real de aquisição. Um criativo vencedor une promessa específica, prova visual e chamada clara. Gatilhos mentais não substituem produto, mas reduzem fricção quando usados com honestidade. O lucro nasce quando oferta, público e entrega se encaixam.",
+          question: "Qual métrica mede melhor eficiência de aquisição?",
+          options: ["CPA", "CPM apenas", "Curtidas", "Tamanho do texto"],
+          answer: 0
+        },
+        {
+          theme: "Marketing Digital",
+          title: "Oferta, Objeção e Prova",
+          text: "Uma boa oferta responde três perguntas antes do cliente pedir: o que ganho, por que confiar e o que faço agora. Provas visuais, depoimentos e demonstrações curtas diminuem medo de compra. A copy não deve gritar; deve organizar desejo, clarear transformação e remover objeções com precisão.",
+          question: "Quais perguntas uma boa oferta responde?",
+          options: ["Onde escondo o preço", "O que ganho, por que confiar e o que faço agora", "Como aumentar confusão", "Qual frase fica maior"],
+          answer: 1
+        }
+      ]
+    ];
+
+    const state = loadState();
+    let chartInstance = null;
+    let currentOtp = null;
+    let currentOtpExpiresAt = 0;
+    let schulte = {
+      numbers: [],
+      expected: 1,
+      running: false,
+      startedAt: 0,
+      timerId: null,
+      lastClickAt: 0
+    };
+    let chunkTimer = null;
+    let pacerTimer = null;
+    let typewriterTimer = null;
+
+    function defaultState() {
+      return {
+        user: { name: "Dyego", email: "" },
+        sessions: [],
+        bestSchulteMs: null,
+        level: 1,
+        speedMultiplier: 1,
+        acceptedIdentity: false,
+        lastContentSeed: Date.now()
+      };
+    }
+
+    function loadState() {
+      try {
+        return { ...defaultState(), ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) };
+      } catch (err) {
+        console.warn("Falha ao carregar estado", err);
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function qs(selector) { return document.querySelector(selector); }
+    function qsa(selector) { return Array.from(document.querySelectorAll(selector)); }
+
+    function toast(message, type = "info") {
+      const zone = qs("#toastZone");
+      const item = document.createElement("div");
+      item.className = "toast";
+      item.textContent = message;
+      if (type === "error") item.style.borderLeftColor = "var(--danger)";
+      if (type === "success") item.style.borderLeftColor = "var(--success)";
+      zone.appendChild(item);
+      setTimeout(() => item.remove(), 4200);
+    }
+
+    function isEmailJsConfigured() {
+      return !Object.values(EMAILJS_CONFIG).some(value => String(value).startsWith("COLE_AQUI"));
+    }
+
+    function initEmailJs() {
+      if (window.emailjs && isEmailJsConfigured()) {
+        window.emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+      }
+    }
+
+    function generateOtp() {
+      return String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    async function sendOtpReal(email, password) {
+      if (!window.emailjs) throw new Error("SDK do EmailJS não carregou. Verifique sua internet/CDN.");
+      if (!isEmailJsConfigured()) throw new Error("Configure Public Key, Service ID e Template ID no arquivo antes do envio real.");
+      currentOtp = generateOtp();
+      currentOtpExpiresAt = Date.now() + 10 * 60 * 1000;
+      const params = {
+        to_email: email,
+        to_name: "Dyego",
+        passcode: currentOtp,
+        app_name: EMAILJS_CONFIG.appName,
+        created_password_hint: password ? "Senha local criada com sucesso" : ""
+      };
+      await window.emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, params);
+      return currentOtp;
+    }
+
+    function setAuthStatus(message, target = "#authStatus") {
+      qs(target).textContent = message;
+    }
+
+    function unlockApp(email) {
+      localStorage.setItem(AUTH_KEY, JSON.stringify({ email, unlockedAt: Date.now() }));
+      state.user.email = email;
+      saveState();
+      qs("#authOverlay").classList.add("hidden");
+      qs("#appShell").setAttribute("aria-hidden", "false");
+      botSay("Acesso liberado, Dyego. Diagnóstico carregado: leitor fonético nível 1. Vamos atacar subvocalização, visão periférica e regressão ocular.");
+      toast("Sistema ALPA desbloqueado.", "success");
+      updateAll();
+    }
+
+    function setupAuth() {
+      initEmailJs();
+      const savedAuth = JSON.parse(localStorage.getItem(AUTH_KEY) || "null");
+      if (savedAuth?.email) {
+        qs("#authOverlay").classList.add("hidden");
+        qs("#appShell").setAttribute("aria-hidden", "false");
+      }
+
+      qs("#sendOtpBtn").addEventListener("click", async () => {
+        const email = qs("#loginEmail").value.trim();
+        const password = qs("#loginPassword").value;
+        if (!email || !email.includes("@")) return setAuthStatus("Digite um e-mail válido.");
+        if (password.length < 6) return setAuthStatus("A senha precisa ter no mínimo 6 caracteres.");
+
+        qs("#loadingSynapse").classList.add("active");
+        setAuthStatus("Preparando envio seguro...");
+        try {
+          await sendOtpReal(email, password);
+          qs("#authStepLogin").classList.remove("active");
+          qs("#authStepOtp").classList.add("active");
+          setAuthStatus("", "#otpStatus");
+          setAuthStatus("OTP enviado. Verifique sua caixa de entrada.");
+          qsa(".otp-digit")[0].focus();
+        } catch (err) {
+          setAuthStatus(err.message || "Falha ao enviar OTP.");
+          toast(err.message || "Falha no envio real do EmailJS.", "error");
+        } finally {
+          qs("#loadingSynapse").classList.remove("active");
+        }
+      });
+
+      qs("#demoOtpBtn").addEventListener("click", () => {
+        const email = qs("#loginEmail").value.trim() || "dyego@teste.local";
+        const password = qs("#loginPassword").value || "123456";
+        if (password.length < 6) return setAuthStatus("A senha precisa ter no mínimo 6 caracteres.");
+        currentOtp = generateOtp();
+        currentOtpExpiresAt = Date.now() + 10 * 60 * 1000;
+        qs("#authStepLogin").classList.remove("active");
+        qs("#authStepOtp").classList.add("active");
+        setAuthStatus(`Modo teste local ativo. OTP: ${currentOtp}`, "#otpStatus");
+        toast("Modo teste local: configure EmailJS para envio real.");
+        qsa(".otp-digit")[0].focus();
+      });
+
+      qs("#verifyOtpBtn").addEventListener("click", () => {
+        const typed = qsa(".otp-digit").map(input => input.value.trim()).join("");
+        if (!currentOtp || Date.now() > currentOtpExpiresAt) return setAuthStatus("OTP expirado. Volte e gere outro código.", "#otpStatus");
+        if (typed !== currentOtp) return setAuthStatus("Código incorreto. Confira os 6 dígitos.", "#otpStatus");
+        unlockApp(qs("#loginEmail").value.trim() || "dyego@teste.local");
+      });
+
+      qs("#backToLoginBtn").addEventListener("click", () => {
+        qs("#authStepOtp").classList.remove("active");
+        qs("#authStepLogin").classList.add("active");
+      });
+
+      qsa(".otp-digit").forEach((input, index, arr) => {
+        input.addEventListener("input", () => {
+          input.value = input.value.replace(/\D/g, "").slice(0, 1);
+          if (input.value && arr[index + 1]) arr[index + 1].focus();
+        });
+        input.addEventListener("keydown", event => {
+          if (event.key === "Backspace" && !input.value && arr[index - 1]) arr[index - 1].focus();
+        });
+      });
+    }
+
+    function currentLevel() {
+      return LEVELS.find(item => item.level === state.level) || LEVELS[0];
+    }
+
+    function getFlatContent() {
+      return contentDB.flat().sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    function getCurrentMetrics() {
+      const sessions = state.sessions;
+      if (!sessions.length) return { ppm: BASELINE.ppm, comprehension: BASELINE.comprehension, ice: BASELINE.ice, gain: 0 };
+      const last = sessions[sessions.length - 1];
+      const ppm = Math.max(BASELINE.ppm, last.ppm || BASELINE.ppm);
+      const comprehension = Math.max(20, Math.min(100, last.comprehension || BASELINE.comprehension));
+      const ice = +(ppm * (comprehension / 100)).toFixed(1);
+      const gain = +(((ice - BASELINE.ice) / BASELINE.ice) * 100).toFixed(1);
+      return { ppm, comprehension, ice, gain };
+    }
+
+    function addSession(type, ppm, comprehension, details = {}) {
+      const ice = +(ppm * (comprehension / 100)).toFixed(1);
+      state.sessions.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        type,
+        ppm: Math.round(ppm),
+        comprehension: Math.round(comprehension),
+        ice,
+        details,
+        createdAt: new Date().toISOString()
+      });
+      if (state.sessions.length > 60) state.sessions = state.sessions.slice(-60);
+      evaluateLevelUp();
+      saveState();
+      updateAll();
+      if (ice > BASELINE.ice && ice >= Math.max(...state.sessions.slice(0, -1).map(s => s.ice), BASELINE.ice)) {
+        botSay(`Recorde de ICE detectado: ${ice}. A leitura está saindo do modo fonético e entrando em blocos visuais.`);
+      }
+    }
+
+    function evaluateLevelUp() {
+      const sessions = state.sessions;
+      if (sessions.length < 5 || state.level >= LEVELS.length) return;
+      const lastFive = sessions.slice(-5);
+      const strictlyImproving = lastFive.every((session, index, array) => index === 0 || session.ice >= array[index - 1].ice);
+      if (strictlyImproving) {
+        const nextLevel = Math.min(LEVELS.length, state.level + 1);
+        if (nextLevel !== state.level) {
+          state.level = nextLevel;
+          state.speedMultiplier = +(1 + (state.level - 1) * 0.16).toFixed(2);
+          const level = currentLevel();
+          document.body.dataset.theme = level.theme;
+          setMinimumSpeeds();
+          botSay(`Patente desbloqueada: ${level.name}. Velocidade mínima ajustada para ${level.minPpm} PPM. Adaptação neural forçada ativada.`);
+          toast(`Nova patente: ${level.name}`, "success");
+          visualPing();
+        }
+      }
+    }
+
+    function progressPct(value, max) {
+      return Math.max(0, Math.min(100, (value / max) * 100));
+    }
+
+    function updateAll() {
+      const metrics = getCurrentMetrics();
+      const level = currentLevel();
+      document.body.dataset.theme = level.theme;
+      qs("#headerLevel").textContent = level.name;
+      qs("#headerSessions").textContent = String(state.sessions.length);
+      qs("#headerIce").textContent = String(metrics.ice);
+      qs("#headerPpm").textContent = String(metrics.ppm);
+      qs("#metricPpm").innerHTML = `${metrics.ppm} <small>ppm</small>`;
+      qs("#metricComp").innerHTML = `${metrics.comprehension}<small>%</small>`;
+      qs("#metricIce").textContent = metrics.ice;
+      qs("#metricGain").innerHTML = `${metrics.gain}<small>%</small>`;
+      qs("#ppmProgress").style.width = `${progressPct(metrics.ppm, 500)}%`;
+      qs("#compProgress").style.width = `${metrics.comprehension}%`;
+      qs("#iceProgress").style.width = `${progressPct(metrics.ice, 260)}%`;
+      qs("#gainProgress").style.width = `${progressPct(Math.max(0, metrics.gain), 300)}%`;
+
+      const mod = state.sessions.length % 5;
+      const pct = (mod / 5) * 100;
+      qs("#levelProgress").style.width = `${state.level >= LEVELS.length ? 100 : pct}%`;
+      const next = LEVELS[state.level];
+      qs("#nextLevelText").textContent = next
+        ? `Faltam ${5 - mod} sessão(ões) no bloco atual. Para destravar ${next.name}, mantenha ICE crescente nas últimas 5 sessões.`
+        : "Você alcançou a patente máxima desta versão.";
+
+      qs("#schulteBest").textContent = state.bestSchulteMs ? `${(state.bestSchulteMs / 1000).toFixed(3)}s` : "--";
+      qs("#contractCard").classList.toggle("accepted", !!state.acceptedIdentity);
+      qs("#contractStatus").textContent = state.acceptedIdentity ? "Identidade aceita: você é um leitor em construção." : "";
+      setMinimumSpeeds();
+      updateTimeline();
+      updateChart();
+    }
+
+    function updateTimeline() {
+      const box = qs("#sessionTimeline");
+      const items = state.sessions.slice(-10).reverse();
+      if (!items.length) {
+        box.innerHTML = `<div class="timeline-item"><span class="tiny-note">Nenhuma sessão registrada ainda. Comece pelo Schulte, Chunking ou Pacer.</span></div>`;
+        return;
+      }
+      box.innerHTML = items.map(session => {
+        const date = new Date(session.createdAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+        return `<div class="timeline-item">
+          <strong>${session.type}</strong>
+          <span>ICE ${session.ice} · ${session.ppm} PPM · ${session.comprehension}% compreensão</span>
+          <span class="tiny-note">${date}</span>
+        </div>`;
+      }).join("");
+    }
+
+    function updateChart() {
+      const canvas = qs("#iceChart");
+      if (!canvas || !window.Chart) return;
+      const ctx = canvas.getContext("2d");
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width || 700, 0);
+      gradient.addColorStop(0, currentLevel().color);
+      gradient.addColorStop(0.5, "#10b981");
+      gradient.addColorStop(1, "#a855f7");
+      const labels = ["Base", ...state.sessions.map((_, i) => `S${i + 1}`)];
+      const data = [BASELINE.ice, ...state.sessions.map(s => s.ice)];
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "ICE",
+            data,
+            borderColor: gradient,
+            backgroundColor: "rgba(56, 189, 248, 0.12)",
+            fill: true,
+            tension: 0.35,
+            pointRadius: 4,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#e5f3ff" } },
+            tooltip: { mode: "index", intersect: false }
+          },
+          scales: {
+            x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.06)" } },
+            y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.06)" }, suggestedMin: 30 }
+          }
+        }
+      });
+    }
+
+    function setMinimumSpeeds() {
+      const level = currentLevel();
+      [qs("#chunkSpeed"), qs("#pacerSpeed")].forEach(input => {
+        if (!input) return;
+        input.min = String(level.minPpm);
+        if (!input.value || Number(input.value) < level.minPpm) input.value = String(level.minPpm);
+      });
+    }
+
+    function setupTabs() {
+      qsa(".tab-btn").forEach(button => {
+        button.addEventListener("click", () => switchTab(button.dataset.tab));
+      });
+      qsa("[data-tab-target]").forEach(button => button.addEventListener("click", () => switchTab(button.dataset.tabTarget)));
+    }
+
+    function switchTab(tab) {
+      qsa(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      qsa(".tab-view").forEach(view => view.classList.toggle("active", view.id === `tab-${tab}`));
+      const messages = {
+        dashboard: "Dashboard aberto. Use as métricas como bússola, não como ego. ICE só vale se compreensão subir junto.",
+        schulte: "Schulte ativo. Fixe o olhar no centro e deixe a periferia trabalhar. Não persiga número com ansiedade.",
+        chunking: "Chunking ativo. A meta é ver blocos, não escutar palavras por dentro.",
+        pacer: "Pacer ativo. Eu vou bloquear sua regressão ocular com ritmo visual.",
+        mindset: "Mindset aberto. Amar leitura começa reduzindo atrito e criando identidade diária."
+      };
+      botSay(messages[tab] || "Módulo carregado.");
+    }
+
+    function setupSchulte() {
+      qs("#startSchulteBtn").addEventListener("click", startSchulte);
+      qs("#shuffleSchulteBtn").addEventListener("click", renderSchulteGrid);
+      renderSchulteGrid();
+    }
+
+    function renderSchulteGrid() {
+      schulte.numbers = shuffle([1,2,3,4,5,6,7,8,9]);
+      schulte.expected = 1;
+      schulte.running = false;
+      clearInterval(schulte.timerId);
+      qs("#schulteTimer").textContent = "00.000s";
+      qs("#schulteNext").textContent = "1";
+      qs("#schulteGrid").innerHTML = schulte.numbers.map(num => `<button class="schulte-cell" data-num="${num}">${num}</button>`).join("");
+      qsa(".schulte-cell").forEach(cell => cell.addEventListener("click", onSchulteClick));
+    }
+
+    function startSchulte() {
+      renderSchulteGrid();
+      schulte.running = true;
+      schulte.startedAt = performance.now();
+      schulte.lastClickAt = schulte.startedAt;
+      schulte.timerId = setInterval(() => {
+        const elapsed = performance.now() - schulte.startedAt;
+        qs("#schulteTimer").textContent = `${(elapsed / 1000).toFixed(3).padStart(6, "0")}s`;
+        if (performance.now() - schulte.lastClickAt > 3000 && schulte.expected <= 9) {
+          botWarn("Pausa acima de 3 segundos. Relaxe a testa, fixe o centro e use visão periférica em vez de caçar número por número.");
+          schulte.lastClickAt = performance.now();
+        }
+      }, 30);
+      botSay("Matriz iniciada. Centro fixo, respiração curta, clique em sequência crescente.");
+    }
+
+    function onSchulteClick(event) {
+      const cell = event.currentTarget;
+      const num = Number(cell.dataset.num);
+      if (!schulte.running) {
+        botSay("Pressione iniciar antes. O cronômetro precisa medir sua varredura real.");
+        return;
+      }
+      const now = performance.now();
+      const delta = now - schulte.lastClickAt;
+      schulte.lastClickAt = now;
+      if (delta > 3000) botWarn("Clique lento detectado. Seu olhar provavelmente estreitou. Volte para o centro visual.");
+      if (num !== schulte.expected) {
+        cell.classList.add("error");
+        setTimeout(() => cell.classList.remove("error"), 280);
+        botWarn(`Sequência incorreta. O próximo alvo é ${schulte.expected}. Não deixe a ansiedade quebrar o padrão.`);
+        return;
+      }
+      cell.classList.add("done");
+      schulte.expected += 1;
+      qs("#schulteNext").textContent = schulte.expected <= 9 ? String(schulte.expected) : "OK";
+      if (schulte.expected > 9) finishSchulte();
+    }
+
+    function finishSchulte() {
+      clearInterval(schulte.timerId);
+      schulte.running = false;
+      const elapsed = performance.now() - schulte.startedAt;
+      qs("#schulteTimer").textContent = `${(elapsed / 1000).toFixed(3)}s`;
+      const isRecord = !state.bestSchulteMs || elapsed < state.bestSchulteMs;
+      if (isRecord) state.bestSchulteMs = elapsed;
+      const ppmEquivalent = Math.round(BASELINE.ppm + Math.max(10, 120 - elapsed / 150) * state.speedMultiplier);
+      const comprehension = Math.min(88, BASELINE.comprehension + Math.round(Math.max(10, 70 - elapsed / 600)));
+      addSession("Schulte 3x3", ppmEquivalent, comprehension, { elapsedMs: Math.round(elapsed) });
+      botSay(isRecord ? `Novo recorde Schulte: ${(elapsed / 1000).toFixed(3)}s. Visão periférica respondendo.` : `Matriz concluída em ${(elapsed / 1000).toFixed(3)}s. Continue buscando fluidez.`);
+    }
+
+    function setupContentSelectors() {
+      const flat = getFlatContent();
+      const options = flat.map((item, index) => `<option value="${index}">${item.theme} · ${item.title}</option>`).join("");
+      qs("#chunkTextSelect").innerHTML = options;
+      qs("#pacerTextSelect").innerHTML = options;
+      qs("#chunkTextSelect").selectedIndex = Math.floor(Math.random() * flat.length);
+      qs("#pacerTextSelect").selectedIndex = Math.floor(Math.random() * flat.length);
+      renderPacerText();
+      qs("#pacerTextSelect").addEventListener("change", renderPacerText);
+      qs("#chunkTextSelect").addEventListener("change", () => qs("#chunkPhrase").textContent = "Pressione iniciar");
+    }
+
+    function selectedContent(selectId) {
+      return getFlatContent()[Number(qs(selectId).value)] || getFlatContent()[0];
+    }
+
+    function setupChunking() {
+      qs("#startChunkBtn").addEventListener("click", startChunking);
+      qs("#stopChunkBtn").addEventListener("click", stopChunking);
+    }
+
+    function startChunking() {
+      stopChunking(false);
+      const content = selectedContent("#chunkTextSelect");
+      const speed = Math.max(Number(qs("#chunkSpeed").value), currentLevel().minPpm);
+      qs("#chunkSpeed").value = String(speed);
+      const words = content.text.split(/\s+/).filter(Boolean);
+      const chunks = [];
+      for (let i = 0; i < words.length; i += 2) chunks.push(words.slice(i, i + 2).join(" "));
+      let index = 0;
+      const delay = Math.max(120, Math.round((60000 / speed) * 2));
+      qs("#chunkQuiz").classList.remove("active");
+      qs("#chunkQuiz").innerHTML = "";
+      qs("#chunkPhrase").textContent = "3...";
+      botSay(`Chunking iniciado em ${speed} PPM. Leia por blocos visuais; não vocalize internamente cada palavra.`);
+      setTimeout(() => {
+        chunkTimer = setInterval(() => {
+          qs("#chunkPhrase").textContent = chunks[index] || "✓";
+          index += 1;
+          if (index > chunks.length) {
+            stopChunking(false);
+            qs("#chunkPhrase").textContent = "Sessão concluída";
+            renderQuiz("#chunkQuiz", content, speed, "Chunking");
+            botSay("Chunking concluído. Agora prove compreensão: responda sem voltar ao texto.");
+          }
+        }, delay);
+      }, 450);
+    }
+
+    function stopChunking(showMessage = true) {
+      if (chunkTimer) clearInterval(chunkTimer);
+      chunkTimer = null;
+      if (showMessage) {
+        qs("#chunkPhrase").textContent = "Pausado";
+        botSay("Chunking pausado. Ajuste velocidade sem fugir do desafio.");
+      }
+    }
+
+    function setupPacer() {
+      qs("#startPacerBtn").addEventListener("click", startPacer);
+      qs("#stopPacerBtn").addEventListener("click", stopPacer);
+    }
+
+    function renderPacerText() {
+      const content = selectedContent("#pacerTextSelect");
+      const sentences = splitIntoLines(content.text, 13);
+      qs("#pacerText").innerHTML = sentences.map(line => `<div class="pacer-line">${escapeHtml(line)}</div>`).join("");
+      qs("#pacerQuiz").classList.remove("active");
+      qs("#pacerQuiz").innerHTML = "";
+    }
+
+    function startPacer() {
+      stopPacer(false);
+      renderPacerText();
+      const content = selectedContent("#pacerTextSelect");
+      const speed = Math.max(Number(qs("#pacerSpeed").value), currentLevel().minPpm);
+      qs("#pacerSpeed").value = String(speed);
+      const lines = qsa(".pacer-line");
+      const totalWords = content.text.split(/\s+/).filter(Boolean).length;
+      const totalDuration = (totalWords / speed) * 60000;
+      const delay = Math.max(420, totalDuration / Math.max(1, lines.length));
+      let index = 0;
+      botSay(`Pacer iniciado em ${speed} PPM. Não volte linhas; confie na primeira leitura.`);
+      pacerTimer = setInterval(() => {
+        lines.forEach(line => line.classList.remove("active"));
+        if (lines[index]) {
+          lines[index].classList.add("active");
+          lines[index].scrollIntoView({ block: "nearest", behavior: "smooth" });
+          index += 1;
+        } else {
+          stopPacer(false);
+          renderQuiz("#pacerQuiz", content, speed, "Pacer");
+          botSay("Pacer concluído. Responda a validação sem regressão ocular.");
+        }
+      }, delay);
+    }
+
+    function stopPacer(showMessage = true) {
+      if (pacerTimer) clearInterval(pacerTimer);
+      pacerTimer = null;
+      if (showMessage) botSay("Pacer pausado. Recomece quando puder manter ritmo limpo.");
+    }
+
+    function renderQuiz(target, content, speed, type) {
+      const box = qs(target);
+      box.classList.add("active");
+      box.innerHTML = `<h3>${content.question}</h3>
+        <div class="quiz-options">
+          ${content.options.map((option, index) => `<button class="option-btn" data-index="${index}">${escapeHtml(option)}</button>`).join("")}
+        </div>`;
+      box.querySelectorAll(".option-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const index = Number(btn.dataset.index);
+          const correct = index === content.answer;
+          box.querySelectorAll(".option-btn").forEach(item => item.disabled = true);
+          btn.classList.add(correct ? "correct" : "wrong");
+          const correctBtn = box.querySelector(`[data-index="${content.answer}"]`);
+          if (correctBtn) correctBtn.classList.add("correct");
+          const comprehension = correct ? Math.min(96, BASELINE.comprehension + 26 + state.level * 5) : Math.max(25, BASELINE.comprehension - 5 + state.level * 3);
+          addSession(type, speed, comprehension, { content: content.title, correct });
+          botSay(correct ? "Compreensão validada. Velocidade sem entendimento é vaidade; hoje você somou os dois." : "Resposta errada. Bom dado diagnóstico: reduza 10 PPM e priorize imagem mental do texto.");
+        }, { once: true });
+      });
+    }
+
+    function setupMindset() {
+      qs("#acceptIdentityBtn").addEventListener("click", () => {
+        state.acceptedIdentity = true;
+        saveState();
+        updateAll();
+        visualPing();
+        botSay("Contrato aceito. Nova identidade instalada: Dyego é um leitor em construção. A meta agora é consistência diária, não perfeição.");
+        toast("Identidade leitora aceita.", "success");
+      });
+      qs("#openReadingRitualBtn").addEventListener("click", () => {
+        botSay("Ritual de 7 minutos: 1 minuto sem tela, 1 minuto respirando, 4 minutos lendo uma página, 1 minuto anotando a ideia mais útil.");
+      });
+    }
+
+    function botSay(message) {
+      clearInterval(typewriterTimer);
+      const box = qs("#botMessage");
+      box.textContent = "";
+      let i = 0;
+      typewriterTimer = setInterval(() => {
+        box.textContent += message.charAt(i);
+        i += 1;
+        if (i >= message.length) clearInterval(typewriterTimer);
+      }, 18);
+    }
+
+    function botWarn(message) {
+      const bot = qs("#aiBot");
+      bot.classList.add("bot-alert");
+      setTimeout(() => bot.classList.remove("bot-alert"), 1900);
+      botSay(message);
+      toast(message, "error");
+    }
+
+    function setupBot() {
+      qs("#minimizeBotBtn").addEventListener("click", () => {
+        qs("#aiBot").classList.toggle("minimized");
+      });
+      setTimeout(() => botSay("Core AI online. Hoje o alvo é simples: menos som mental, mais blocos visuais, mais compreensão."), 800);
+    }
+
+    function visualPing() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = 660;
+        gain.gain.value = 0.025;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        setTimeout(() => { osc.stop(); ctx.close(); }, 130);
+      } catch (_) {
+        // Sem áudio disponível; efeitos visuais seguem ativos.
+      }
+    }
+
+    function setupReset() {
+      qs("#resetBtn").addEventListener("click", () => {
+        const confirmReset = confirm("Resetar todas as métricas e sessões locais?");
+        if (!confirmReset) return;
+        Object.assign(state, defaultState());
+        saveState();
+        updateAll();
+        botSay("Dados locais resetados. Baseline restaurado: 117 PPM, 40% compreensão, ICE 46.8.");
+      });
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function splitIntoLines(text, wordsPerLine = 12) {
+      const words = text.split(/\s+/).filter(Boolean);
+      const lines = [];
+      for (let i = 0; i < words.length; i += wordsPerLine) {
+        lines.push(words.slice(i, i + wordsPerLine).join(" "));
+      }
+      return lines;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function boot() {
+      setupAuth();
+      setupTabs();
+      setupBot();
+      setupSchulte();
+      setupContentSelectors();
+      setupChunking();
+      setupPacer();
+      setupMindset();
+      setupReset();
+      updateAll();
+    }
+
+    document.addEventListener("DOMContentLoaded", boot);
+  </script>
+</body>
+</html>
