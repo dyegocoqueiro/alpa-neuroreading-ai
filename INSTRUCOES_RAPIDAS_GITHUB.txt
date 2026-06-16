@@ -1,0 +1,19 @@
+PASSO A PASSO RÁPIDO
+
+1) Entre em https://github.com/new
+2) Repository name: alpa-neuroreading-ai
+3) Marque Public
+4) Clique em Create repository
+5) Clique em Add file > Upload files
+6) Envie os arquivos deste pacote: index.html, .nojekyll e README.md
+7) Clique em Commit changes
+8) Vá em Settings > Pages
+9) Source: Deploy from a branch
+10) Branch: main / root
+11) Save
+
+Seu site ficará em:
+https://SEU-USUARIO.github.io/alpa-neuroreading-ai/
+
+Se quiser usar no seu GitHub antigo, provavelmente será algo como:
+https://dyegocoqueiro.github.io/alpa-neuroreading-ai/
