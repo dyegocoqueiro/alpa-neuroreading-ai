@@ -1,11 +1,14 @@
 PASSO A PASSO RÁPIDO
 
+MindForge Reading — Ultimate Edition
+Forje sua mente leitora.
+
 1) Entre em https://github.com/new
-2) Repository name: alpa-neuroreading-ai
+2) Repository name: mindforge-reading
 3) Marque Public
 4) Clique em Create repository
 5) Clique em Add file > Upload files
-6) Envie os arquivos deste pacote: index.html, .nojekyll e README.md
+6) Envie os arquivos deste pacote: index.html, .nojekyll, README.md e INSTRUCOES_RAPIDAS_GITHUB.txt
 7) Clique em Commit changes
 8) Vá em Settings > Pages
 9) Source: Deploy from a branch
@@ -13,7 +16,7 @@ PASSO A PASSO RÁPIDO
 11) Save
 
 Seu site ficará em:
-https://SEU-USUARIO.github.io/alpa-neuroreading-ai/
+https://SEU-USUARIO.github.io/mindforge-reading/
 
-Se quiser usar no seu GitHub antigo, provavelmente será algo como:
-https://dyegocoqueiro.github.io/alpa-neuroreading-ai/
+Para esta publicação:
+https://dyegocoqueiro.github.io/mindforge-reading/

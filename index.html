@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ALPA NeuroReading AI v8.0 - plataforma de treino de leitura, visão periférica, chunking, pacer e mindset leitor." />
-  <title>ALPA NeuroReading AI v8.0 - Ultimate Edition</title>
+  <meta name="description" content="MindForge Reading - treino neural premium para leitura, foco, visão periférica, chunking, pacer e mindset leitor." />
+  <title>MindForge Reading — Ultimate Edition</title>
 
   <!-- Chart.js para gráficos do dashboard -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -877,11 +877,11 @@
   <div class="toast-zone" id="toastZone"></div>
 
   <!-- LOGIN / OTP -->
-  <section class="auth-overlay" id="authOverlay" aria-label="Autenticação ALPA">
+  <section class="auth-overlay" id="authOverlay" aria-label="Autenticação MindForge Reading">
     <div class="auth-card">
-      <div class="auth-logo">AL</div>
-      <h2>ALPA NeuroReading AI v8.0</h2>
-      <p>Camada de validação por e-mail, diagnóstico inicial e desbloqueio progressivo dos treinos de leitura ativa.</p>
+      <div class="auth-logo">MF</div>
+      <h2>MindForge Reading</h2>
+      <p>Forje sua mente leitora com validação por e-mail, diagnóstico inicial e desbloqueio progressivo dos treinos de leitura ativa.</p>
 
       <div class="auth-step active" id="authStepLogin">
         <label>
@@ -919,10 +919,10 @@
   <div class="app-shell" id="appShell" aria-hidden="true">
     <header class="top-header">
       <div class="brand-line">
-        <div class="brand-orb">ALPA</div>
+        <div class="brand-orb">MF</div>
         <div class="brand-copy">
-          <h1>NeuroReading AI v8.0 - Ultimate Edition</h1>
-          <p>Dyego · Treinamento ALPA de leitura ativa, visão periférica, supressão ocular e identidade leitora.</p>
+          <h1>MindForge Reading — Ultimate Edition</h1>
+          <p>Leitura de alta performance. Transforme foco em velocidade, velocidade em compreensão.</p>
         </div>
       </div>
       <div class="header-stats">
@@ -1014,7 +1014,7 @@
             <div class="timeline" id="sessionTimeline"></div>
           </article>
           <article class="card">
-            <h3>Diagnóstico ALPA inicial</h3>
+            <h3>Diagnóstico MindForge Reading inicial</h3>
             <p class="tiny-note">Nível base: <strong>Leitor Fonético (Nível 1)</strong>. Métricas iniciais: 117 PPM, 40% de compreensão e ICE 46.8.</p>
             <div class="control-row">
               <button class="btn secondary" data-tab-target="schulte">Treinar visão periférica</button>
@@ -1171,20 +1171,20 @@
     </main>
   </div>
 
-  <!-- BOT ALPA -->
+  <!-- BOT MINDFORGE READING -->
   <aside class="ai-bot" id="aiBot" aria-live="polite">
     <div class="bot-head">
       <div class="bot-identity">
         <div class="bot-avatar">AI</div>
         <div class="bot-title">
-          <strong>ALPA Core Bot</strong>
+          <strong>MindForge Reading Bot</strong>
           <span>monitor neural ativo</span>
         </div>
       </div>
       <button class="mini-btn" id="minimizeBotBtn" title="Minimizar bot">—</button>
     </div>
     <div class="bot-body">
-      <div class="bot-message" id="botMessage">Inicializando análise de sinapses...</div>
+      <div class="bot-message" id="botMessage">MindForge Reading: treino neural para leitores de elite.</div>
     </div>
   </aside>
 
@@ -1203,7 +1203,7 @@
       publicKey: "COLE_AQUI_SUA_PUBLIC_KEY",
       serviceId: "COLE_AQUI_SEU_SERVICE_ID",
       templateId: "COLE_AQUI_SEU_TEMPLATE_ID",
-      appName: "ALPA NeuroReading AI v8.0"
+      appName: "MindForge Reading"
     };
 
     const BASELINE = {
@@ -1222,8 +1222,8 @@
       { level: 5, name: "Nível 5 · Prisma", theme: "level-5", minPpm: 310, color: "#f472b6" }
     ];
 
-    const STORAGE_KEY = "alpa_v8_state_dyego";
-    const AUTH_KEY = "alpa_v8_auth_dyego";
+    const STORAGE_KEY = "mindforge_reading_state_dyego";
+    const AUTH_KEY = "mindforge_reading_auth_dyego";
 
     const contentDB = [
       [
@@ -1413,8 +1413,8 @@
       saveState();
       qs("#authOverlay").classList.add("hidden");
       qs("#appShell").setAttribute("aria-hidden", "false");
-      botSay("Acesso liberado, Dyego. Diagnóstico carregado: leitor fonético nível 1. Vamos atacar subvocalização, visão periférica e regressão ocular.");
-      toast("Sistema ALPA desbloqueado.", "success");
+      botSay("MindForge Reading ativo, Dyego. Diagnóstico carregado: leitor fonético nível 1. Vamos atacar subvocalização, visão periférica e regressão ocular.");
+      toast("MindForge Reading desbloqueado.", "success");
       updateAll();
     }
 
